@@ -1,25 +1,29 @@
 var MachinePoker = require('machine-poker')
-    , SmartBot = require('../players/smartBot')
-    , MercBot = require('../players/mercBot')
-    , CallBot = require('../players/callBot')
-    , UnpredictableBot = require('../players/unpredictableBot')
-    , RandBot = require('../players/randBot')
     , JsSeat = MachinePoker.seats.JsLocal;
 
-exports.createTable = function (challenger, opts) {
+const fs = require('fs');
+function getFileNames(directoryPath) {
+  try {
+    const files = fs.readdirSync(directoryPath);
+    return files;
+  } catch (err) {
+    console.error("Error reading directory:", err);
+    return [];
+  }
+}
+
+let botNames = getFileNames('players');
+const bots = [];
+for (let i = 0; i < botNames.length; i++) {
+  bots.push(JsSeat.create(require('../players/' + botNames[i])));
+}
+
+exports.createTable = function (opts) {
   var table = MachinePoker.create({
     maxRounds: opts.hands || 100,
     chips: opts.chips || 1000
   });
 
-  table.addPlayers(
-    [ JsSeat.create(SmartBot)
-    , JsSeat.create(MercBot)
-    , JsSeat.create(CallBot)
-    , JsSeat.create(UnpredictableBot)
-    , JsSeat.create(RandBot)
-    , challenger
-    ]
-  );
+  table.addPlayers(bots);
   return table;
 }
