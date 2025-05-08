@@ -1,5 +1,4 @@
 module.exports = function () {
-  const prompt = require('prompt-sync')();
   const helper = require('pokerbot-helper');
   var info = { 
     name: "SigmaBot",
